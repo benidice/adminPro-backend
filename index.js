@@ -22,7 +22,8 @@ app.use( express.json() );
 
 
 // Rutas
-app.use( '/api/auth', require('./routes/auth') );
+app.use( '/api/login', require('./routes/auth') );
+app.use( '/api/usuarios', require('./routes/usuarios') );
 
 //Manejar las demás rutas
 app.get( '*', ( req, res) => {
