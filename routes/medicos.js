@@ -26,9 +26,11 @@ router.post( '/', [
 ], crearMedico );
 
 
-// Crear un nuevo usuario
+// Actualizar médicos - La imagen ya la actualizaremos en el servicio de imagenes
 router.put( '/:id', [
     validarJWT,
+    check('name', 'El nombre del medico es obligatorio').notEmpty(),
+    check('hospital_id', 'El identificador del hospital debe de ser válido').isMongoId(),
     validarCampos
 ],  actualizarMedico);
 

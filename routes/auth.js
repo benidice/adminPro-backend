@@ -1,7 +1,11 @@
+/*
+    path: /login
+*/
+
 const { Router } = require('express');
 const { check } = require('express-validator');
 
-const { loginUsuario, revalidarToken, googleSignIn } = require('../controllers/auth');
+const { loginUsuario, renewToken, googleSignIn } = require('../controllers/auth');
 const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
 
@@ -18,7 +22,7 @@ router.post( '/', [
 
 
 // Validar y revalidar token
-router.get( '/renew', validarJWT , revalidarToken );
+router.get( '/renew', validarJWT , renewToken );
 
 
 // Login de usuario Google

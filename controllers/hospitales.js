@@ -67,26 +67,30 @@ const crearHospital = async(req, res = response) => {
 
 const actualizarHospital = async(req, res = response) => {
 
-    const { email, password } = req.body;
+    const id = req.params.id;
+    const uid = req.uid;        //Tenemos el uid pq pasamos por la verificación del JWT
 
     try {
-        
-        const dbUser = await Usuario.findOne({ email });
-        if(  !dbUser ) {
+      
+        const hospital = await Hospital.findById( id );
+        if(  !hospital ) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El correo no existe'
+                msg: 'Hospital no encontrado por id'
             });
         }
+  
+        const cambiosHospital = {
+            ...req.body,
+            usuario: uid        // Guardamos el ultimo usuario que lo modifica
+        };
 
-   
+        const hopitalActualizado = await Hospital.findByIdAndUpdate( id, cambiosHospital, { new: true });
+
         // Respuesta del servicio
         return res.json({
             ok: true,
-            uid: dbUser.id,
-            name: dbUser.name,
-            email: dbUser.email,
-            token
+            hospital: hopitalActualizado
         });
 
 
@@ -103,28 +107,22 @@ const actualizarHospital = async(req, res = response) => {
 
 const eliminarHospital = async(req, res = response) => {
 
-    const { email, password } = req.body;
+    const id = req.params.id;
 
     try {
-        
-        const dbUser = await Usuario.findOne({ email });
-        if(  !dbUser ) {
+      
+        const hospital = await Hospital.findById( id );
+        if(  !hospital ) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El correo no existe'
+                msg: 'Hospital no encontrado por id'
             });
         }
+  
+        await Hospital.findByIdAndDelete( id );
 
-   
         // Respuesta del servicio
-        return res.json({
-            ok: true,
-            uid: dbUser.id,
-            name: dbUser.name,
-            email: dbUser.email,
-            token
-        });
-
+        return res.json({ ok: true, msg: 'Hospital eliminado' });
 
     } catch (error) {
         console.log(error);
@@ -133,80 +131,8 @@ const eliminarHospital = async(req, res = response) => {
             msg: 'Hable con el administrador'
         });
     }
-
 }
 
-
-const __Hospital = async(req, res = response) => {
-
-    const { email, password } = req.body;
-
-    try {
-        
-        const dbUser = await Usuario.findOne({ email });
-        if(  !dbUser ) {
-            return res.status(400).json({
-                ok: false,
-                msg: 'El correo no existe'
-            });
-        }
-
-   
-        // Respuesta del servicio
-        return res.json({
-            ok: true,
-            uid: dbUser.id,
-            name: dbUser.name,
-            email: dbUser.email,
-            token
-        });
-
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            ok: false,
-            msg: 'Hable con el administrador'
-        });
-    }
-
-}
-
-
-const _Hospital = async(req, res = response) => {
-
-    const { email, password } = req.body;
-
-    try {
-        
-        const dbUser = await Usuario.findOne({ email });
-        if(  !dbUser ) {
-            return res.status(400).json({
-                ok: false,
-                msg: 'El correo no existe'
-            });
-        }
-
-   
-        // Respuesta del servicio
-        return res.json({
-            ok: true,
-            uid: dbUser.id,
-            name: dbUser.name,
-            email: dbUser.email,
-            token
-        });
-
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            ok: false,
-            msg: 'Hable con el administrador'
-        });
-    }
-
-}
 
 
 

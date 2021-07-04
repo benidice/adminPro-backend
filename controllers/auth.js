@@ -52,28 +52,24 @@ const loginUsuario = async(req, res = response) => {
 
 }
 
-const revalidarToken = async(req, res = response ) => {
+
+
+//                      //
+//   Revalidar Token    //
+//                      //
+const renewToken = async(req, res = response ) => {
 
     const { uid } = req;
-
-    // Leer BD
-    const dbUser = await Usuario.findById(uid);
-
     // Generar el JWT
     const token = await generarJWT( uid );
 
-    return res.json({
-        ok: true,
-        uid, 
-        name: dbUser.name,
-        email: dbUser.email,
-        token
-    });
-
+    return res.json({ ok: true, token });
 }
 
 
-
+//                      //
+//   Login con Google   //
+//                      //
 const googleSignIn = async( req, res = response) => {
 
     const googleToken = req.body.token;
@@ -124,6 +120,6 @@ const googleSignIn = async( req, res = response) => {
 
 module.exports = {
     loginUsuario,
-    revalidarToken,
+    renewToken,
     googleSignIn
 }

@@ -68,26 +68,32 @@ const crearMedico = async(req, res = response) => {
 
 const actualizarMedico = async(req, res = response) => {
 
-    const { email, password } = req.body;
+
+    const id = req.params.id;
+    const uid = req.uid;        //Tenemos el uid pq pasamos por la verificación del JWT
 
     try {
-        
-        const dbUser = await Usuario.findOne({ email });
-        if(  !dbUser ) {
+      
+        const medico = await Medico.findById( id );
+        if(  !medico ) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El correo no existe'
+                msg: 'Medico no encontrado por id'
             });
         }
+  
+        const cambiosMedico = {
+            hospital: req.body.hospital_id,
+            ...req.body,
+            usuario: uid        // Guardamos el ultimo usuario que lo modifica
+        };
 
-   
+        const medicoActualizado = await Medico.findByIdAndUpdate( id, cambiosMedico, { new: true });
+
         // Respuesta del servicio
         return res.json({
             ok: true,
-            uid: dbUser.id,
-            name: dbUser.name,
-            email: dbUser.email,
-            token
+            medico: medicoActualizado
         });
 
 
@@ -104,100 +110,22 @@ const actualizarMedico = async(req, res = response) => {
 
 const eliminarMedico = async(req, res = response) => {
 
-    const { email, password } = req.body;
+    const id = req.params.id;
 
     try {
-        
-        const dbUser = await Usuario.findOne({ email });
-        if(  !dbUser ) {
+      
+        const medico = await Medico.findById( id );
+        if(  !medico ) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El correo no existe'
+                msg: 'Medico no encontrado por id'
             });
         }
+  
+        await Medico.findByIdAndDelete( id );
 
-   
         // Respuesta del servicio
-        return res.json({
-            ok: true,
-            uid: dbUser.id,
-            name: dbUser.name,
-            email: dbUser.email,
-            token
-        });
-
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            ok: false,
-            msg: 'Hable con el administrador'
-        });
-    }
-
-}
-
-
-const __Medico = async(req, res = response) => {
-
-    const { email, password } = req.body;
-
-    try {
-        
-        const dbUser = await Usuario.findOne({ email });
-        if(  !dbUser ) {
-            return res.status(400).json({
-                ok: false,
-                msg: 'El correo no existe'
-            });
-        }
-
-   
-        // Respuesta del servicio
-        return res.json({
-            ok: true,
-            uid: dbUser.id,
-            name: dbUser.name,
-            email: dbUser.email,
-            token
-        });
-
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            ok: false,
-            msg: 'Hable con el administrador'
-        });
-    }
-
-}
-
-
-const _Medico = async(req, res = response) => {
-
-    const { email, password } = req.body;
-
-    try {
-        
-        const dbUser = await Usuario.findOne({ email });
-        if(  !dbUser ) {
-            return res.status(400).json({
-                ok: false,
-                msg: 'El correo no existe'
-            });
-        }
-
-   
-        // Respuesta del servicio
-        return res.json({
-            ok: true,
-            uid: dbUser.id,
-            name: dbUser.name,
-            email: dbUser.email,
-            token
-        });
-
+        return res.json({ ok: true, msg: 'Medico eliminado' });
 
     } catch (error) {
         console.log(error);

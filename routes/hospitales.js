@@ -28,6 +28,7 @@ router.post( '/', [
 // Crear un nuevo usuario
 router.put( '/:id', [
     validarJWT,
+    check('name', 'El nombre del hospital es obligatorio').notEmpty(),
     validarCampos
 ],  actualizarHospital);
 
