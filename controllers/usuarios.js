@@ -2,17 +2,29 @@ const { response } = require('express');
 const Usuario = require('../models/usuario');
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
+const { query } = require('express-validator');
 
 
 
 const getUsuarios = async(req, res = response) => {
 
+    const desde = Number(req.query.desde) || 0;
+    const limite = Number(req.query.limite) || 5;
+
     //Con las llaves le indicamos un filtro
-    const usuarios = await Usuario.find({}, 'nombre email role google');
+    const [ usuarios, total ] = await Promise.all( [
+        Usuario
+         .find({}, 'nombre email role google img')
+         .skip( desde )
+         .limit ( limite ),
+
+        Usuario.countDocuments()
+    ]);
     
     return res.status(200).json({
         ok: true,
-        usuarios
+        usuarios,
+        total
     }); 
 
 }
