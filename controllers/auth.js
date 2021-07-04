@@ -2,6 +2,7 @@ const { response } = require('express');
 const Usuario = require('../models/usuario');
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
+const { googleVerify } = require('../helpers/google-verify');
 
 
 
@@ -73,7 +74,56 @@ const revalidarToken = async(req, res = response ) => {
 
 
 
+const googleSignIn = async( req, res = response) => {
+
+    const googleToken = req.body.token;
+    
+
+    try {
+        const { name, email, picture } = await googleVerify( googleToken );
+        const usuarioDB = await Usuario.findOne({ email });
+        let usuario;
+
+        if( !usuarioDB ){
+            // Si no existe el usuario.
+            usuario = new Usuario({
+                name, email,
+                //Al grabar sin hash nunca podremos entrar ya que al entrar se le hara el hash y no hará match
+                password: '@@@',        
+                img: picture,
+                google: true
+            });
+    
+            // Guardar en DB
+            await usuario.save();
+        }else if( !usuarioDB.google ){
+            //existe usuario
+            usuario = usuarioDB;
+            usuario.google = true;
+            // password: '@@@' -> Si no le cambiamos la contraseña el usuario tendrá los dos métodos de autenticacion
+            await usuario.save();            
+        }else{
+            //el usuario ya existe en la BD
+            usuario = usuarioDB;
+        }
+       
+        //Fernando tenia aqui la grabación, pero entonces graba sienmpre en la BD aunque ya este autenticado.
+        // Generar el JWT de nuestra aplicación
+        const token = await generarJWT( usuario.id )
+
+        res.json({ ok: true, token });      
+    } catch (error) {
+        return res.status(401).json({
+            ok: false,
+            msg: 'El token no es válido'
+        });
+    }
+}
+
+
+
 module.exports = {
     loginUsuario,
-    revalidarToken
+    revalidarToken,
+    googleSignIn
 }
