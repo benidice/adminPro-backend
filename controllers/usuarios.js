@@ -82,7 +82,6 @@ const crearUsuario = async(req, res = response) => {
 
 const actualizarUsuario = async(req, res = response) => {
 
-    //TODO: Validar token 
     const id = req.params.id;
 
     try {
@@ -103,13 +102,19 @@ const actualizarUsuario = async(req, res = response) => {
             if( emailExists ){
                 return res.status(400).json({
                     ok: false,
-                    msg: 'el correo ya esta registrado por otro usuario'
+                    msg: 'El correo ya esta en uso.'
                 })
             }
         }
 
-        campos.email = email;   //Si no choca con otro email lo añadimos a los campos a actualizar
-
+        if ( !dbUser.google ){      //Si no choca con otro email y no es usuario de google
+        campos.email = email;       // lo añadimos a los campos a actualizar
+        }else if ( dbUser.email !== email ){
+            return res.status(400).json({ 
+                ok: false, 
+                msg: 'Usuarios de google no pueden modificar su correo'
+            })
+        }
         //Con new en true regresa el usuario actulizado, en caso contrario, los datos anteriores
         const usuarioActualizado = await Usuario.findByIdAndUpdate( id, campos, { new: true} );
 

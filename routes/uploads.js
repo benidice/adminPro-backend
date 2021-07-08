@@ -21,7 +21,7 @@ const router = Router();
 router.use( expressFileUpload() );
 
 
-// Validar y revalidar token
+// Subir una imagen - seria como actualizar
 router.put( '/:tipo/:id', [
     validarJWT,
     check('tipo', 'El tipo o colección al que pertenece el fichero es obligatorio').notEmpty(),
@@ -31,7 +31,7 @@ router.put( '/:tipo/:id', [
 
 
 router.get( '/:tipo/:file', [
-    validarJWT,
+    // validarJWT,  //Si la protegemos los links desde la aplicacion de Angular no funcionan
     check('tipo', 'El tipo o colección al que pertenece el fichero es obligatorio').notEmpty(),
     check('file', 'El nombre del fichero es obligatorio').notEmpty(),
     validarCampos

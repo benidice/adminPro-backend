@@ -52,7 +52,7 @@ const fileUpload = async(req, res = response) => {
     //Path para guardar la imagen
     const pathFile = `./uploads/${tipo}`;
     //Mover la imagen .mv()
-    file.mv( `${path}/${nombreArchivo}`, (err) => {
+    file.mv( `${pathFile}/${nombreArchivo}`, (err) => {
         if (err){
             return res.status(500).json({
                 ok: false, mgs: 'Error al mover la imagen'

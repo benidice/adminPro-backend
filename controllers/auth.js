@@ -60,10 +60,16 @@ const loginUsuario = async(req, res = response) => {
 const renewToken = async(req, res = response ) => {
 
     const { uid } = req;
+    try {
+        const token = await generarJWT( uid );
+        const user  = await Usuario.findById( uid );
+        console.log(user);
+        return res.json({ ok: true, token, user });
+    } catch (error) {
+        
+    }
     // Generar el JWT
-    const token = await generarJWT( uid );
 
-    return res.json({ ok: true, token });
 }
 
 
