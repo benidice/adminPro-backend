@@ -9,12 +9,12 @@ const { query } = require('express-validator');
 const getUsuarios = async(req, res = response) => {
 
     const desde = Number(req.query.desde) || 0;
-    const limite = Number(req.query.limite) || 5;
+    const limite = Number(req.query.limite) || 50;
 
     //Con las llaves le indicamos un filtro
     const [ usuarios, total ] = await Promise.all( [
         Usuario
-         .find({}, 'nombre email role google img')
+         .find({}, 'name email role google img')
          .skip( desde )
          .limit ( limite ),
 
