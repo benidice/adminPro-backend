@@ -3,6 +3,7 @@ const Usuario = require('../models/usuario');
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
 const { googleVerify } = require('../helpers/google-verify');
+const { getMenuFrontEnd } = require('../helpers/menu-frontend');
 
 
 
@@ -38,7 +39,8 @@ const loginUsuario = async(req, res = response) => {
             uid: dbUser.id,
             name: dbUser.name,
             email: dbUser.email,
-            token
+            token,
+            menu: getMenuFrontEnd( dbUser.role )
         });
 
 
@@ -63,8 +65,13 @@ const renewToken = async(req, res = response ) => {
     try {
         const token = await generarJWT( uid );
         const user  = await Usuario.findById( uid );
-        console.log(user);
-        return res.json({ ok: true, token, user });
+        // console.log(user);
+        return res.json({
+            ok: true,
+            token,
+            user,
+            menu: getMenuFrontEnd( user.role )
+        });
     } catch (error) {
         
     }
@@ -113,7 +120,13 @@ const googleSignIn = async( req, res = response) => {
         // Generar el JWT de nuestra aplicación
         const token = await generarJWT( usuario.id )
 
-        res.json({ ok: true, token });      
+        res.json({
+            ok: true,
+            token,
+            menu: getMenuFrontEnd( usuarioDB.role )
+        });      
+
+
     } catch (error) {
         return res.status(401).json({
             ok: false,
